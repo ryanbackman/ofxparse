@@ -121,6 +121,7 @@ class Transaction(object):
         self.amount = None
         self.id = ''
         self.memo = ''
+        self.checknum = None
     
     def __repr__(self):
         return "<Transaction units=" + str(self.amount) + ">"
@@ -564,5 +565,16 @@ class OfxParser(object):
         else:
             raise OfxParserException(u"Missing FIT id (a required field)")
         
+        checknum_tag = txn_ofx.find('checknum')
+        if hasattr(checknum_tag, "contents"):
+            try:
+                transaction.checknum = checknum_tag.contents[0].strip()
+            except IndexError:
+                # CHECKNUM can be empty.
+                pass
+            except TypeError:
+                pass
+        
         return transaction
-
+        
+        
